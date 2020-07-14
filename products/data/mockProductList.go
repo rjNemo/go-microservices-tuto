@@ -1,9 +1,13 @@
 package data
 
-import "time"
+import (
+	"time"
+
+	"github.com/rjNemo/go-micro/products/models"
+)
 
 // dummy persistence layer
-var productList = []*Product{
+var productList = []*models.Product{
 	{
 		ID:          1,
 		Name:        "Latte",

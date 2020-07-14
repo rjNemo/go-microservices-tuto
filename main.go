@@ -3,54 +3,49 @@ package main
 import (
 	"context"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/rjNemo/go-micro/handlers"
+
+	"github.com/rjNemo/go-micro/products/handlers"
 	"github.com/rjNemo/go-micro/server"
 )
 
 const port = ":5000"
 
 func main() {
+	// create a logger to control application wide logging
 	logger := log.New(os.Stdout, "Product API: ", log.LstdFlags|log.Lshortfile)
 
-	// create the handlers
-	productsHandler := handlers.NewProducts(logger)
-	// create a server mux and register the handlers
+	// create a router
 	router := mux.NewRouter()
-	// GET
-	getRouter := router.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", productsHandler.GetProducts)
-	// POST
-	postRouter := router.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", productsHandler.AddProduct)
-	postRouter.Use(productsHandler.ProductValidationMiddleware)
-	// PUT
-	putRouter := router.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc("/{id:[0-9]+}", productsHandler.UpdateProduct)
-	putRouter.Use(productsHandler.ProductValidationMiddleware)
 
-	// creates a new server
+	// create the handler
+	productsHandler := handlers.New(logger)
+
+	// register the handler method to the router
+	productsHandler.RegisterRoutes(router)
+
+	// creates a production-ready server using the handler
 	srv := server.New(router, port)
 
-	// non blocking application server
+	// start a non blocking application server
 	go func() {
-		logger.Printf("Server started at address http://localhost%s...", port)
-		logger.Fatalf("Server failed: %v", srv.ListenAndServe())
+		logger.Printf("Server started at address http://localhost%s ...", port)
+		logger.Fatalf("Server failed: %v", srv.ListenAndServe()) // TODO: use ListenAndServeTLS in production
 	}()
 
 	// catch sigterm or interrupt and gracefully terminates the server
 	sigChan := make(chan os.Signal)
-	signal.Notify(sigChan, os.Interrupt)
-	signal.Notify(sigChan, os.Kill)
-
+	signal.Notify(sigChan, os.Interrupt) // interrupt
+	signal.Notify(sigChan, os.Kill)      // sigterm
+	// log received signal
 	sig := <-sigChan
 	logger.Printf("Received %v signal... graceful shutdown", sig)
 
-	toCtx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	toCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	cancel()
 	srv.Shutdown(toCtx)
 }

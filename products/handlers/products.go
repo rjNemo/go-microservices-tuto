@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rjNemo/go-micro/products/data"
+	"github.com/rjNemo/go-micro/products/models"
 )
 
 // Products is a handler for Products API service
@@ -16,8 +17,10 @@ type Products struct {
 	logger *log.Logger
 }
 
-// NewProducts creates a Products handler
-func NewProducts(logger *log.Logger) *Products { return &Products{logger: logger} }
+// New creates a Products handler
+func New(logger *log.Logger) *Products {
+	return &Products{logger: logger}
+}
 
 // GetProducts writes all products to response in JSON format
 func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +40,7 @@ func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 func (p *Products) AddProduct(w http.ResponseWriter, r *http.Request) {
 	p.logger.Println("Handle 'POST' request")
 	// get product from the request
-	newProd := r.Context().Value(KeyProduct{}).(*data.Product) // cast into a Product
+	newProd := r.Context().Value(KeyProduct{}).(*models.Product) // cast into a Product
 
 	p.logger.Printf("product: %#v", newProd)
 	data.AddProduct(newProd)
@@ -50,7 +53,7 @@ func (p *Products) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 	p.logger.Println("Handle 'PUT' request", id)
 	// get product from the request
-	newProd := r.Context().Value(KeyProduct{}).(*data.Product) // cast into a Product
+	newProd := r.Context().Value(KeyProduct{}).(*models.Product) // cast into a Product
 
 	p.logger.Printf("product: %#v", newProd)
 	err := data.UpdateProduct(id, newProd)
@@ -72,7 +75,7 @@ type KeyProduct struct{}
 func (p *Products) ProductValidationMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// create a new product
-		newProd := &data.Product{}
+		newProd := &models.Product{}
 		// deserialize JSON to product
 		err := newProd.FromJSON(r.Body)
 		if err != nil {
@@ -87,4 +90,19 @@ func (p *Products) ProductValidationMiddleware(next http.Handler) http.Handler {
 		// call the next handler
 		next.ServeHTTP(w, req)
 	})
+}
+
+// RegisterRoutes associates path to controller
+func (p *Products) RegisterRoutes(r *mux.Router) {
+	// GET
+	getRouter := r.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", p.GetProducts)
+	// POST
+	postRouter := r.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", p.AddProduct)
+	postRouter.Use(p.ProductValidationMiddleware)
+	// PUT
+	putRouter := r.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", p.UpdateProduct)
+	putRouter.Use(p.ProductValidationMiddleware)
 }
