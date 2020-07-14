@@ -1,3 +1,17 @@
+// Package classification Product API
+//
+// Documentation for Product API
+//
+// Schemes: http
+// BasePath: /
+// Version: 1.0.0
+//
+// Consumes:
+// 	- application/json
+//
+// Produces:
+// 	- application/json
+// swagger:meta
 package handlers
 
 import (
@@ -17,23 +31,17 @@ type Products struct {
 	logger *log.Logger
 }
 
+// list of products in the response. For go-swagger
+// swagger:response productsResponse
+type productsResponse struct {
+	// All products in the datastore
+	// in: body
+	Body []models.Product
+}
+
 // New creates a Products handler
 func New(logger *log.Logger) *Products {
 	return &Products{logger: logger}
-}
-
-// GetProducts writes all products to response in JSON format
-func (p *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
-	p.logger.Println("Handle 'GET' request")
-	// fetch products from the datastore
-	productList := data.AllProducts()
-	// serialize list to JSON
-	err := productList.ToJSON(w)
-	if err != nil {
-		errMsg := fmt.Sprintf("Unable to encode request: %s\n", err)
-		http.Error(w, errMsg, http.StatusInternalServerError)
-		return
-	}
 }
 
 // AddProduct reads request body and creates new product
@@ -100,19 +108,4 @@ func (p *Products) ProductValidationMiddleware(next http.Handler) http.Handler {
 		// call the next handler
 		next.ServeHTTP(w, req)
 	})
-}
-
-// RegisterRoutes associates path to controller
-func (p *Products) RegisterRoutes(r *mux.Router) {
-	// GET
-	getRouter := r.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", p.GetProducts)
-	// POST
-	postRouter := r.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", p.AddProduct)
-	postRouter.Use(p.ProductValidationMiddleware)
-	// PUT
-	putRouter := r.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc("/{id:[0-9]+}", p.UpdateProduct)
-	putRouter.Use(p.ProductValidationMiddleware)
 }
