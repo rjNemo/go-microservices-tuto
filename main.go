@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/rjNemo/go-micro/handlers"
 	"github.com/rjNemo/go-micro/server"
 )
@@ -20,11 +21,21 @@ func main() {
 	// create the handlers
 	productsHandler := handlers.NewProducts(logger)
 	// create a server mux and register the handlers
-	mux := http.NewServeMux()
-	mux.Handle("/", productsHandler)
+	router := mux.NewRouter()
+	// GET
+	getRouter := router.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", productsHandler.GetProducts)
+	// POST
+	postRouter := router.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", productsHandler.AddProduct)
+	postRouter.Use(productsHandler.ProductValidationMiddleware)
+	// PUT
+	putRouter := router.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", productsHandler.UpdateProduct)
+	putRouter.Use(productsHandler.ProductValidationMiddleware)
 
 	// creates a new server
-	srv := server.New(mux, port)
+	srv := server.New(router, port)
 
 	// non blocking application server
 	go func() {

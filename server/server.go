@@ -6,7 +6,7 @@ import (
 )
 
 // New creates a server using given mux and port
-func New(mux *http.ServeMux, port string) *http.Server {
+func New(mux http.Handler, port string) *http.Server {
 	return &http.Server{
 		Addr:         port,
 		Handler:      mux,
