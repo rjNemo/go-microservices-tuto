@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -19,4 +20,9 @@ func (p *Products) RegisterRoutes(r *mux.Router) {
 	putRouter := r.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/{id:[0-9]+}", p.UpdateProduct)
 	putRouter.Use(p.ProductValidationMiddleware)
+
+	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
+	swaggerHandler := middleware.Redoc(opts, nil)
+	getRouter.Handle("/docs", swaggerHandler)
+	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 }
