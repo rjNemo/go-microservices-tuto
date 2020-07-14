@@ -79,10 +79,20 @@ func (p *Products) ProductValidationMiddleware(next http.Handler) http.Handler {
 		// deserialize JSON to product
 		err := newProd.FromJSON(r.Body)
 		if err != nil {
+			p.logger.Printf("Error deserializing %v", err)
 			errMsg := fmt.Sprintf("Unable to decode data: %s\n", err)
 			http.Error(w, errMsg, http.StatusBadRequest)
 			return
 		}
+		// validate the product
+		err = newProd.Validate()
+		if err != nil {
+			p.logger.Printf("Error deserializing %v", err)
+			errMsg := fmt.Sprintf("Validation error: %s\n", err)
+			http.Error(w, errMsg, http.StatusBadRequest)
+			return
+		}
+
 		// add product to the context
 		ctx := context.WithValue(r.Context(), KeyProduct{}, newProd)
 		req := r.WithContext(ctx)
