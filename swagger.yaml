@@ -6,22 +6,37 @@ definitions:
     description: Product defines the structure of a product
     properties:
       description:
+        description: the description for this poduct
+        maxLength: 10000
         type: string
         x-go-name: Description
       id:
+        description: the id for this product
         format: int64
+        minimum: 1
         type: integer
         x-go-name: ID
       name:
+        description: the name for this poduct
+        maxLength: 255
         type: string
         x-go-name: Name
       price:
+        description: the price for the product
         format: float
+        minimum: 0.01
         type: number
         x-go-name: Price
       sku:
+        description: the SKU for the product
+        pattern: '[a-z]+-[a-z]+-[a-z]+'
         type: string
         x-go-name: SKU
+    required:
+    - id
+    - name
+    - price
+    - sku
     type: object
     x-go-package: github.com/rjNemo/go-micro/products/models
 info:
@@ -31,7 +46,7 @@ info:
 paths:
   /products:
     get:
-      description: Returns a list of products
+      description: Return a list of products from the database
       operationId: listProducts
       responses:
         "200":
@@ -39,39 +54,83 @@ paths:
       tags:
       - products
     post:
-      description: Creates a product
-      operationId: product
+      description: Create a new product
+      operationId: createProduct
       responses:
-        "201":
+        "200":
           $ref: '#/responses/productResponse'
+        "422":
+          $ref: '#/responses/errorValidation'
+        "501":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - products
+    put:
+      description: Update a products details
+      operationId: updateProduct
+      parameters:
+      - description: The ID of a product in the database
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      responses:
+        "204":
+          $ref: '#/responses/noContent'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "422":
+          $ref: '#/responses/errorValidation'
       tags:
       - products
   /products/{id}:
     delete:
-      description: Deletes a product
-      operationId: product
+      description: Update a products details
+      operationId: deleteProduct
+      parameters:
+      - description: The ID of a product in the database
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      responses:
+        "204":
+          $ref: '#/responses/noContent'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "501":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - products
+    get:
+      description: Return a list of products from the database
+      operationId: getProduct
       responses:
         "200":
           $ref: '#/responses/productResponse'
-      tags:
-      - products
-    put:
-      description: Updates a product
-      operationId: product
-      responses:
-        "204":
-          $ref: '#/responses/productResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
       tags:
       - products
 produces:
 - application/json
 responses:
+  errorResponse:
+    description: Generic error message returned as a string
+  errorValidation:
+    description: Validation errors defined as an array of strings
+  noContent:
+    description: empty response
   productResponse:
-    description: product in the response. For go-swagger
+    description: product in the response.
     schema:
       $ref: '#/definitions/Product'
   productsResponse:
-    description: list of products in the response. For go-swagger
+    description: list of products in the response.
     schema:
       items:
         $ref: '#/definitions/Product'

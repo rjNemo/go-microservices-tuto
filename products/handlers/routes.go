@@ -12,6 +12,7 @@ func (p *Products) RegisterRoutes(r *mux.Router) {
 	// GET
 	getRouter := r.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", p.GetProducts)
+	getRouter.HandleFunc("/{id:[0-9]+}", p.GetOneProduct)
 	// POST
 	postRouter := r.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/", p.AddProduct)

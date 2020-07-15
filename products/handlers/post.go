@@ -7,10 +7,13 @@ import (
 	"github.com/rjNemo/go-micro/products/models"
 )
 
-// swagger:route POST /products products product
-// Creates a product
+// swagger:route POST /products products createProduct
+// Create a new product
+//
 // responses:
-// 	201: productResponse
+//	200: productResponse
+//  422: errorValidation
+//  501: errorResponse
 
 // AddProduct reads request body and creates new product
 func (p *Products) AddProduct(w http.ResponseWriter, r *http.Request) {

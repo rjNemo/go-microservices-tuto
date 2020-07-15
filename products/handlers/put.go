@@ -3,22 +3,22 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
-	"github.com/gorilla/mux"
 	"github.com/rjNemo/go-micro/products/data"
 	"github.com/rjNemo/go-micro/products/models"
 )
 
-// swagger:route PUT /products/{id} products product
-// Updates a product
+// swagger:route PUT /products products updateProduct
+// Update a products details
+//
 // responses:
-// 	204: productResponse
+//	204: noContent
+//  404: errorResponse
+//  422: errorValidation
 
 // UpdateProduct edit product identified by id
 func (p *Products) UpdateProduct(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, _ := strconv.Atoi(vars["id"])
+	id := getProductID(r)
 
 	p.logger.Println("Handle 'PUT' request", id)
 	// get product from the request
@@ -35,4 +35,6 @@ func (p *Products) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
+	// write the no content success header
+	w.WriteHeader(http.StatusNoContent)
 }

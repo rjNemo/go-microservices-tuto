@@ -28,6 +28,18 @@ func AddProduct(p *models.Product) {
 	productList = append(productList, p)
 }
 
+// GetProductByID returns a single product which matches the id from the
+// database.
+// If a product is not found this function returns a ProductNotFound error
+func GetProductByID(id int) (*models.Product, error) {
+	i, _, err := findProduct(id)
+	if err != nil {
+		return nil, ErrorProductNotFound
+	}
+
+	return productList[i], nil
+}
+
 // UpdateProduct edits a Product identified by its id
 func UpdateProduct(id int, p *models.Product) error {
 	idx, _, err := findProduct(id)

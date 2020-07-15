@@ -9,12 +9,15 @@ import (
 	"github.com/rjNemo/go-micro/products/data"
 )
 
-// swagger:route DELETE /products/{id} products product
-// Deletes a product
+// swagger:route DELETE /products/{id} products deleteProduct
+// Update a products details
+//
 // responses:
-// 	200: productResponse
+//	204: noContent
+//  404: errorResponse
+//  501: errorResponse
 
-// DeleteProduct edit product identified by id
+// DeleteProduct delete product from datastore identified by id
 func (p *Products) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
@@ -31,4 +34,6 @@ func (p *Products) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
+	// write the no content success header
+	w.WriteHeader(http.StatusNoContent)
 }
