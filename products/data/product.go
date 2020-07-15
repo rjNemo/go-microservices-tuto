@@ -39,6 +39,16 @@ func UpdateProduct(id int, p *models.Product) error {
 	return nil
 }
 
+// DeleteProduct removes a Product idntified by its id
+func DeleteProduct(id int) error {
+	idx, _, err := findProduct(id)
+	if err != nil {
+		return err
+	}
+	productList = append(productList[0:idx], productList[idx+1:]...)
+	return nil
+}
+
 // ErrorProductNotFound its thrown when the product is not found
 var ErrorProductNotFound = fmt.Errorf("Product not found")
 

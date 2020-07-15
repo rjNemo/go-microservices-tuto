@@ -38,9 +38,38 @@ paths:
           $ref: '#/responses/productsResponse'
       tags:
       - products
+    post:
+      description: Creates a product
+      operationId: product
+      responses:
+        "201":
+          $ref: '#/responses/productResponse'
+      tags:
+      - products
+  /products/{id}:
+    delete:
+      description: Deletes a product
+      operationId: product
+      responses:
+        "200":
+          $ref: '#/responses/productResponse'
+      tags:
+      - products
+    put:
+      description: Updates a product
+      operationId: product
+      responses:
+        "204":
+          $ref: '#/responses/productResponse'
+      tags:
+      - products
 produces:
 - application/json
 responses:
+  productResponse:
+    description: product in the response. For go-swagger
+    schema:
+      $ref: '#/definitions/Product'
   productsResponse:
     description: list of products in the response. For go-swagger
     schema:

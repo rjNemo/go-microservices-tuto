@@ -20,7 +20,10 @@ func (p *Products) RegisterRoutes(r *mux.Router) {
 	putRouter := r.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/{id:[0-9]+}", p.UpdateProduct)
 	putRouter.Use(p.ProductValidationMiddleware)
-
+	// DELETE
+	deleteRouter := r.Methods(http.MethodDelete).Subrouter()
+	deleteRouter.HandleFunc("/{id:[0-9]+}", p.DeleteProduct)
+	// swagger docs
 	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
 	swaggerHandler := middleware.Redoc(opts, nil)
 	getRouter.Handle("/docs", swaggerHandler)
