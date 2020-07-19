@@ -109,6 +109,14 @@ paths:
     get:
       description: Return a list of products from the database
       operationId: getProduct
+      parameters:
+      - description: The ID of a product in the database
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
       responses:
         "200":
           $ref: '#/responses/productResponse'

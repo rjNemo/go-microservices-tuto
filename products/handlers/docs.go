@@ -32,7 +32,7 @@ type productResponse struct {
 	Body models.Product
 }
 
-// swagger:parameters deleteProduct updateProduct
+// swagger:parameters deleteProduct updateProduct getProduct
 type productIDParameter struct {
 	// The ID of a product in the database
 	// in: path

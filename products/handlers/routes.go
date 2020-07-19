@@ -28,6 +28,6 @@ func (p *Products) RegisterRoutes(m *mux.Router, path string) {
 	// swagger docs
 	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
 	swaggerHandler := middleware.Redoc(opts, nil)
-	getRouter.Handle("/docs", swaggerHandler)
-	getRouter.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
+	m.Handle("/docs", swaggerHandler).Methods(http.MethodGet)
+	m.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 }
