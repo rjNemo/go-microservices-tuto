@@ -65,26 +65,6 @@ paths:
           $ref: '#/responses/errorResponse'
       tags:
       - products
-    put:
-      description: Update a products details
-      operationId: updateProduct
-      parameters:
-      - description: The ID of a product in the database
-        format: int64
-        in: path
-        name: id
-        required: true
-        type: integer
-        x-go-name: ID
-      responses:
-        "204":
-          $ref: '#/responses/noContent'
-        "404":
-          $ref: '#/responses/errorResponse'
-        "422":
-          $ref: '#/responses/errorValidation'
-      tags:
-      - products
   /products/{id}:
     delete:
       description: Update a products details
@@ -122,6 +102,26 @@ paths:
           $ref: '#/responses/productResponse'
         "404":
           $ref: '#/responses/errorResponse'
+      tags:
+      - products
+    put:
+      description: Update a products details
+      operationId: updateProduct
+      parameters:
+      - description: The ID of a product in the database
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      responses:
+        "204":
+          $ref: '#/responses/noContent'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "422":
+          $ref: '#/responses/errorValidation'
       tags:
       - products
 produces:

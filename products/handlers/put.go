@@ -8,7 +8,7 @@ import (
 	"github.com/rjNemo/go-micro/products/models"
 )
 
-// swagger:route PUT /products products updateProduct
+// swagger:route PUT /products/{id} products updateProduct
 // Update a products details
 //
 // responses:
