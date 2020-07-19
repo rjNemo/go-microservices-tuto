@@ -14,6 +14,7 @@ import (
 )
 
 const port = ":5000"
+const productPath = "/products"
 
 func main() {
 	// create a logger to control application wide logging
@@ -26,14 +27,14 @@ func main() {
 	productsHandler := handlers.New(logger)
 
 	// register the handler method to the router
-	productsHandler.RegisterRoutes(router)
+	productsHandler.RegisterRoutes(router, productPath)
 
 	// creates a production-ready server using the handler
 	srv := server.New(router, port)
 
 	// start a non blocking application server
 	go func() {
-		logger.Printf("Server started at address http://localhost%s ...", port)
+		logger.Printf("Server started at http://localhost%s ...", port)
 		logger.Fatalf("Server failed: %v", srv.ListenAndServe()) // TODO: use ListenAndServeTLS in production
 	}()
 

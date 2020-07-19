@@ -8,7 +8,8 @@ import (
 )
 
 // RegisterRoutes associates path to controller
-func (p *Products) RegisterRoutes(r *mux.Router) {
+func (p *Products) RegisterRoutes(m *mux.Router, path string) {
+	r := m.StrictSlash(true).PathPrefix(path).Subrouter()
 	// GET
 	getRouter := r.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", p.GetProducts)
