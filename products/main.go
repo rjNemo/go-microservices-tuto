@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/rjNemo/go-micro/products/handlers"
-	"github.com/rjNemo/go-micro/server"
+	"github.com/rjNemo/go-micro/products/server"
 )
 
 const port = ":5000"
