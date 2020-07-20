@@ -16,6 +16,9 @@ import (
 const port = ":5000"
 const productPath = "/products"
 
+// allowed consumers. Use "*" for public API only.
+var origins = []string{"http://localhost:3000"}
+
 func main() {
 	// create a logger to control application wide logging
 	logger := log.New(os.Stdout, "Product API: ", log.LstdFlags|log.Lshortfile)
@@ -30,7 +33,7 @@ func main() {
 	productsHandler.RegisterRoutes(router, productPath)
 
 	// creates a production-ready server using the handler
-	srv := server.New(router, port)
+	srv := server.New(router, port, origins)
 
 	// start a non blocking application server
 	go func() {

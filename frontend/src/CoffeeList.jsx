@@ -1,44 +1,32 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
-import { useState } from "react";
-import { useEffect } from "react";
+
+const Products = ({ products }) =>
+  products.map((product) => (
+    <tr key={product.id}>
+      <td>{product.name}</td>
+      <td>{product.price}</td>
+      <td>{product.sku}</td>
+    </tr>
+  ));
 
 const CoffeeList = () => {
-  const [state, setState] = useState({ products: [] });
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
+    const readData = () => {
+      axios
+        .get(window.global.api_location + "/products")
+        .then((response) => {
+          setProducts(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
     readData();
-  });
-
-  const readData = () => {
-    axios
-      .get(window.global.api_location + "/products")
-      .then((response) => {
-        console.log(response.data);
-
-        setState({ products: response.data });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const getProducts = () => {
-    let table = [];
-
-    for (let i = 0; i < state.products.length; i++) {
-      table.push(
-        <tr key={i}>
-          <td>{state.products[i].name}</td>
-          <td>{state.products[i].price}</td>
-          <td>{state.products[i].sku}</td>
-        </tr>
-      );
-    }
-
-    return table;
-  };
+  }, []);
 
   return (
     <div>
@@ -51,7 +39,9 @@ const CoffeeList = () => {
             <th>SKU</th>
           </tr>
         </thead>
-        <tbody>{getProducts()}</tbody>
+        <tbody>
+          <Products products={products} />
+        </tbody>
       </Table>
     </div>
   );
